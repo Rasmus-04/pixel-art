@@ -1,4 +1,5 @@
 from random import randint
+import time
 
 BLACK = (0, 0, 0)
 WHITE = (255, 255, 255)
@@ -20,3 +21,4 @@ blocks = []
 all_color_buttons = []
 
 run = True
+enter_settings = False
