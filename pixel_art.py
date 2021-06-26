@@ -1,4 +1,3 @@
-import pygame
 import time
 from tkinter import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
@@ -34,7 +33,6 @@ class button:
 
             win.blit(label, (self.x, self.y))
 
-            #draw_text(self.text, x=self.x, y=self.y, size=self.size, color=self.color)
             # Hit box
             if self.test_mode:
                 pygame.draw.rect(win, RED, (self.x, self.y, self.width, self.height), 2)
@@ -44,7 +42,6 @@ class button:
 
             if self.test_mode:
                 pygame.draw.rect(win, RED, (self.x, self.y, self.width, self.height), 2)
-
 
         self.check_klick()
 
@@ -62,6 +59,8 @@ class button:
                 if pos[0] > self.x and pos[0] < (self.x + self.width):
                     if pos[1] > self.y and pos[1] < (self.y + self.height):
                         self.func()
+                        if self.test_mode:
+                            print("Works")
 
         elif self.img != None:
             if pygame.mouse.get_pressed()[0]:
@@ -73,6 +72,12 @@ class button:
                             self.active = True
                         else:
                             self.active = False
+
+                        if self.func != None:
+                            self.func()
+
+                        if self.test_mode:
+                            print("Works")
 
 
 
@@ -155,7 +160,9 @@ def draw_canvis():
     pygame.draw.rect(win, (BLACK), (canvisX_start, canvisY_start, canvisX, canvisY), 5)
 
     draw_blocks()
-    draw_grid()
+
+    if draw_grid_on_canvis:
+        draw_grid()
 
 
 def draw(pos, color):
@@ -164,6 +171,29 @@ def draw(pos, color):
         if pos[0] > block_pos[0] and pos[0] < (block_pos[0] + block_size):
             if pos[1] > block_pos[1] and pos[1] < (block_pos[1] + block_size):
                 i[1] = color
+
+
+def get_color_from_canvis(pos):
+    global active_color
+    for i in blocks:
+        block_pos = i[0]
+        if pos[0] > block_pos[0] and pos[0] < (block_pos[0] + block_size):
+            if pos[1] > block_pos[1] and pos[1] < (block_pos[1] + block_size):
+                active_color = i[1]
+
+
+def fill_one_color(new_color, pos):
+    for i in blocks:
+        block_pos = i[0]
+        if pos[0] > block_pos[0] and pos[0] < (block_pos[0] + block_size):
+            if pos[1] > block_pos[1] and pos[1] < (block_pos[1] + block_size):
+                color_to_change = i[1]
+                for i in blocks:
+                    if i[1] == color_to_change:
+                        i[1] = new_color
+                else:
+                    fill_picture_button.active = False
+                    break
 
 
 def change_active_color(color):
@@ -222,22 +252,38 @@ def fill_canvis():
         i[1] = (active_color)
 
 
+def change_show_grid():
+    global draw_grid_on_canvis
+
+    if show_grid_button.active:
+        show_grid_button.img = off_button_img
+        draw_grid_on_canvis = False
+    else:
+        show_grid_button.img = on_button_img
+        draw_grid_on_canvis = True
+
+
 def settings():
     global run
 
-    while settings_button.active:
+    def redraw_setting_win():
+        win.fill(WHITE)
 
+        draw_text("Pixlar Art", middleX=True, size=60)
+        draw_text("Show Grid", x=show_grid_button.x, y=show_grid_button.y - 20, size=25)
+        settings_button.draw()
+        show_grid_button.draw()
+
+
+        pygame.display.update()
+
+    while settings_button.active:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 run = False
                 settings_button.active = False
 
-        win.fill(WHITE)
-
-        draw_text("Pixlar Art", middleX=True, size=60)
-        settings_button.draw()
-
-        pygame.display.update()
+        redraw_setting_win()
 
 
 def redraw_win():
@@ -250,6 +296,7 @@ def redraw_win():
     fill_button.draw()
     random_picture_button.draw()
     settings_button.draw()
+    fill_picture_button.draw()
 
     draw_text("Pixlar Art", middleX=True, size=60)
 
@@ -266,8 +313,9 @@ save_button = button("Save", WIDTH/2 - 100, HEIGHT - 100, 85, 34, 50, BLACK, sav
 load_button = button("Load", WIDTH/2, HEIGHT - 100, 85, 34, 50, BLACK, load)
 fill_button = button("Fill", 30, HEIGHT - 50, 50, 34, 50, BLACK, fill_canvis)
 random_picture_button = button("Ranom Picture", WIDTH/2 - 130, HEIGHT - 50, 248, 34, 50, BLACK, randomize_canvis)
+fill_picture_button = button(img=pygame.transform.smoothscale(fill_img, (50, 50)), x=WIDTH - 200, y=HEIGHT- 100, width=50, height=50)
 
-settings_button = button(img=pygame.transform.smoothscale(pygame.image.load("settings.png"), (50, 50)), x=10, y=10, width=50, height=50, func=settings)
+settings_button = button(img=pygame.transform.smoothscale(settings_img, (50, 50)), x=10, y=10, width=50, height=50, func=settings)
 
 
 active_color_button = colors_button(active_color, WIDTH - 100, HEIGHT - 90, change_active_color)
@@ -282,11 +330,13 @@ green_color_button = colors_button(GREEN, random_color_button.x, red_color_butto
 all_color_buttons.append(green_color_button)
 blue_color_button = colors_button(BLUE, random_color_button.x, green_color_button.y + 55, change_active_color)
 all_color_buttons.append(blue_color_button)
-gray_color_button = colors_button(GRAY, random_color_button.x, blue_color_button.y + 55, change_active_color)
+gray_color_button = colors_button((100,100,100), random_color_button.x, blue_color_button.y + 55, change_active_color)
 all_color_buttons.append(gray_color_button)
 rainbow_color_button = colors_button(BLACK, random_color_button.x, gray_color_button.y + 55, change_active_color)
 all_color_buttons.append(rainbow_color_button)
 
+
+show_grid_button = button(img=on_button_img, x=200, y=100, width=80, height=50,func=change_show_grid)
 
 get_block_pos()
 
@@ -301,10 +351,17 @@ def main():
                 run = False
 
         if pygame.mouse.get_pressed()[0]:
-            draw(pygame.mouse.get_pos(), active_color)
-        else:
-            if pygame.mouse.get_pressed()[2]:
-                draw(pygame.mouse.get_pos(), block_start_color)
+            if not fill_picture_button.active:
+                draw(pygame.mouse.get_pos(), active_color)
+            else:
+                fill_one_color(active_color, pygame.mouse.get_pos())
+
+        elif pygame.mouse.get_pressed()[2]:
+            draw(pygame.mouse.get_pos(), block_start_color)
+        elif pygame.mouse.get_pressed()[1]:
+            rainbow_color_button.active_color = False
+            get_color_from_canvis(pygame.mouse.get_pos())
+            active_color_button.color = active_color
 
         if timer <= 0:
             random_color_button.color = (randint(0,255), randint(0,255), randint(0,255))
