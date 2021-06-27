@@ -328,6 +328,16 @@ def custom_rgb_color():
                 if pos[1] > color_window_Y and pos[1] < (color_window_Y + 255):
                     active_color = (pos[0] - color_window_X, pos[1] - color_window_Y, blue)
                     active_color_button.color = active_color
+                    rainbow_color_button.active_color = False
+
+        if pygame.mouse.get_pressed()[0]:
+            pos = pygame.mouse.get_pos()
+            if (pos[0] < color_window_X) or (pos[0] > (color_window_X + 300)):
+                color_picker_button.active = False
+            if pos[1] < color_window_Y or pos[1] > (color_window_Y + 255):
+                color_picker_button.active = False
+
+
 
         pygame.draw.rect(win, BLACK, (color_window_X + 255, color_window_Y, 45, 255), 2)
         pygame.display.update()
