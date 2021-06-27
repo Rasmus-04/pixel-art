@@ -273,6 +273,66 @@ def settings():
         redraw_setting_win()
 
 
+def custom_rgb_color():
+    global run, active_color
+
+    blue = 0
+    color_window_X, color_window_Y = color_picker_button.x - 320, color_picker_button.y - 200
+
+    while color_picker_button.active:
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                run = False
+                color_picker_button.active = False
+
+        # x=[0], y=[1], width=[2], height=[3]
+        slider = (color_window_X + 255, color_window_Y + blue, 45, 10)
+        pygame.draw.rect(win, WHITE, (300, 0, 200, 45))
+
+        draw_text("Pixlar Art", middleX=True, size=60)
+
+        for color_button in all_color_buttons:
+            color_button.draw()
+
+        draw_text("Active Color", x=active_color_button.x - 30, y=active_color_button.y - 20, color=active_color)
+        color_picker_button.draw()
+
+        pygame.draw.rect(win, GRAY, (color_window_X, color_window_Y, 300, 255))
+        pygame.draw.rect(win, (0, 0, 0), slider)
+
+        for red in range(256):
+            for green in range(256):
+                pygame.draw.rect(win, (red, green, blue), (color_window_X + red, color_window_Y + green, 1, 1))
+
+        pygame.draw.rect(win, BLACK, (color_window_X, color_window_Y, 300, 255), 2)
+
+        if pygame.mouse.get_pressed()[0]:
+            if pygame.mouse.get_pos()[0] > slider[0] and pygame.mouse.get_pos()[0] < (slider[0] + slider[2]):
+                if pygame.mouse.get_pos()[1] > slider[1] and pygame.mouse.get_pos()[1] < (slider[1] + slider[3]):
+                    blue = pygame.mouse.get_pos()[1] - color_window_Y - 5
+                    if blue > 255 - slider[3]:
+                        blue = 255 - slider[3]
+                    elif blue < 0:
+                        blue = 0
+
+                elif pygame.mouse.get_pos()[1] > color_window_Y and pygame.mouse.get_pos()[1] < color_window_Y + 255:
+                    blue = pygame.mouse.get_pos()[1] - color_window_Y - 5
+                    if blue > 255 - slider[3]:
+                        blue = 255 - slider[3]
+                    elif blue < 0:
+                        blue = 0
+
+        if pygame.mouse.get_pressed()[0]:
+            pos = pygame.mouse.get_pos()
+            if pos[0] > color_window_X and pos[0] < (color_window_X + 255):
+                if pos[1] > color_window_Y and pos[1] < (color_window_Y + 255):
+                    active_color = (pos[0] - color_window_X, pos[1] - color_window_Y, blue)
+                    active_color_button.color = active_color
+
+        pygame.draw.rect(win, BLACK, (color_window_X + 255, color_window_Y, 45, 255), 2)
+        pygame.display.update()
+
+
 def redraw_win():
     win.fill(WHITE)
     draw_canvis()
@@ -284,6 +344,7 @@ def redraw_win():
     random_picture_button.draw()
     settings_button.draw()
     fill_picture_button.draw()
+    color_picker_button.draw()
 
     draw_text("Pixlar Art", middleX=True, size=60)
     draw_text("Active Color", x=active_color_button.x - 30, y=active_color_button.y - 20, color=active_color)
@@ -302,6 +363,7 @@ random_picture_button = button("Ranom Picture", WIDTH/2 - 130, HEIGHT - 50, 248,
 fill_picture_button = button(img=pygame.transform.smoothscale(fill_img, (50, 50)), x=WIDTH - 200, y=HEIGHT- 100, width=50, height=50)
 
 settings_button = button(img=pygame.transform.smoothscale(settings_img, (50, 50)), x=10, y=10, width=50, height=50, func=settings)
+color_picker_button = button(img=pygame.transform.smoothscale(custom_color_picker_img, (50,50)), x=WIDTH-75, y=canvisY_start + 55 * 7, width=50, height=50, func=custom_rgb_color)
 
 
 active_color_button = colors_button(active_color, WIDTH - 100, HEIGHT - 90, change_active_color)

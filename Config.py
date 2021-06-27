@@ -22,6 +22,7 @@ on_button_img = pygame.image.load(path.join("Assets", "on_button.png"))
 off_button_img = pygame.image.load(path.join("Assets", "off_button.png"))
 settings_img = pygame.image.load(path.join("Assets", "settings.png"))
 fill_img = pygame.image.load(path.join("Assets", "fill.png"))
+custom_color_picker_img = pygame.image.load(path.join("Assets", "custom_rgb_color.png"))
 
 blocks = []
 all_color_buttons = []
