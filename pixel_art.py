@@ -6,9 +6,7 @@ from Config import *
 
 pygame.init()
 pygame.font.init()
-
 win = pygame.display.set_mode((WIDTH, HEIGHT))
-
 pygame.display.set_caption("Pixlar Art")
 
 
@@ -39,10 +37,8 @@ class button:
 
         elif self.img != None:
             win.blit(self.img, (self.x, self.y))
-
             if self.test_mode:
                 pygame.draw.rect(win, RED, (self.x, self.y, self.width, self.height), 2)
-
         self.check_klick()
 
     def check_klick(self):
@@ -72,10 +68,8 @@ class button:
                             self.active = True
                         else:
                             self.active = False
-
                         if self.func != None:
                             self.func()
-
                         if self.test_mode:
                             print("Works")
 
@@ -92,7 +86,6 @@ class colors_button:
 
     def draw(self):
         pygame.draw.rect(win, self.color, (self.x, self.y, self.size, self.size))
-
         self.check_klick()
 
     def check_klick(self):
@@ -120,7 +113,6 @@ def draw_text(txt, x=0, y=0, middleX=False, middleY=False, color=(0,0,0), font="
 
     if middleX:
         x = WIDTH/2 - label.get_width()/2
-
     if middleY:
         y = HEIGHT/2 - label.get_height()/2
 
@@ -158,9 +150,7 @@ def draw_blocks():
 def draw_canvis():
     # Black border around the canvis
     pygame.draw.rect(win, (BLACK), (canvisX_start, canvisY_start, canvisX, canvisY), 5)
-
     draw_blocks()
-
     if draw_grid_on_canvis:
         draw_grid()
 
@@ -238,7 +228,6 @@ def showFileNav(op=False):
     else:
         filename = asksaveasfilename(title="Save File",
                                      filetypes=myFormats)  # Ask the user choose a path to save their file to
-
     return filename
 
 
@@ -274,7 +263,6 @@ def settings():
         settings_button.draw()
         show_grid_button.draw()
 
-
         pygame.display.update()
 
     while settings_button.active:
@@ -282,7 +270,6 @@ def settings():
             if event.type == pygame.QUIT:
                 run = False
                 settings_button.active = False
-
         redraw_setting_win()
 
 
@@ -299,7 +286,6 @@ def redraw_win():
     fill_picture_button.draw()
 
     draw_text("Pixlar Art", middleX=True, size=60)
-
     draw_text("Active Color", x=active_color_button.x - 30, y=active_color_button.y - 20, color=active_color)
 
     for color_button in all_color_buttons:
@@ -334,7 +320,6 @@ gray_color_button = colors_button((100,100,100), random_color_button.x, blue_col
 all_color_buttons.append(gray_color_button)
 rainbow_color_button = colors_button(BLACK, random_color_button.x, gray_color_button.y + 55, change_active_color)
 all_color_buttons.append(rainbow_color_button)
-
 
 show_grid_button = button(img=on_button_img, x=200, y=100, width=80, height=50,func=change_show_grid)
 
@@ -379,7 +364,6 @@ def main():
         if settings_button.active:
             settings()
             settings_button.active = False
-
 
 main()
 pygame.display.quit()
