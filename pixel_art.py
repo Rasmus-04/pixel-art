@@ -1,6 +1,9 @@
 import time
 from tkinter import *
 from tkinter.filedialog import askopenfilename, asksaveasfilename
+
+import pygame
+
 from Config import *
 
 
@@ -252,6 +255,32 @@ def change_show_grid():
         draw_grid_on_canvis = True
 
 
+def fill_spesific_aria(block_index):
+    change_color_from = blocks[block_index][1]
+    blocks[block_index][1] = active_color
+    redraw_win()
+
+    not_allowed_Y = canvisY_start
+
+    if (block_index + 1) < len(blocks):
+        if blocks[block_index + 1][0][1] != not_allowed_Y:
+            if blocks[block_index + 1][1] == change_color_from:
+                fill_spesific_aria(block_index + 1)
+
+    if blocks[block_index][0][1] != not_allowed_Y:
+        if block_index - 1 >= 0:
+            if blocks[block_index - 1][1] == change_color_from:
+                fill_spesific_aria(block_index - 1)
+
+    if block_index - int(canvisY / block_size) >= 0:
+        if blocks[block_index - int((canvisY / block_size))][1] == change_color_from:
+            fill_spesific_aria(block_index - int((canvisY / block_size)))
+
+    if block_index + int(canvisY / block_size) < len(blocks):
+        if blocks[block_index + int((canvisY / block_size))][1] == change_color_from:
+            fill_spesific_aria(block_index + int((canvisY / block_size)))
+
+
 def settings():
     global run
 
@@ -411,14 +440,24 @@ def main():
             if not fill_picture_button.active:
                 draw(pygame.mouse.get_pos(), active_color)
             else:
-                fill_one_color(active_color, pygame.mouse.get_pos())
+                #fill_one_color(active_color, pygame.mouse.get_pos())
+                time.sleep(0.01)
+                fill_picture_button.active = False
+                pos = pygame.mouse.get_pos()
+                for index, block in enumerate(blocks):
+                    block_pos = block[0]
+                    if pos[0] > block_pos[0] and pos[0] < (block_pos[0] + block_size):
+                        if pos[1] > block_pos[1] and pos[1] < (block_pos[1] + block_size):
+                            fill_spesific_aria(index)
 
         elif pygame.mouse.get_pressed()[2]:
             draw(pygame.mouse.get_pos(), block_start_color)
+
         elif pygame.mouse.get_pressed()[1]:
             rainbow_color_button.active_color = False
             get_color_from_canvis(pygame.mouse.get_pos())
             active_color_button.color = active_color
+
 
         if timer <= 0:
             random_color_button.color = (randint(0,255), randint(0,255), randint(0,255))
